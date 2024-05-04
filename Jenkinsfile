@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Define environment variables for Git and DockerHub credentials
         GIT_REPO = 'https://github.com/newdelthis/docker_jenkins_demo.git'
-        DOCKER_REPO = 'newdelthis/docker_jenkins_demo'
+        DOCKER_REPO = 'haajkahate/docker_jenkins_demo'
         DOCKER_CREDENTIALS = credentials('my-docker-hub-credentials-id')
         IMAGE_TAG = '1.0' // Make sure to use string for tag
     }
