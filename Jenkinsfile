@@ -5,9 +5,8 @@ pipeline {
         // Define environment variables for Git and DockerHub credentials
         GIT_REPO = 'https://github.com/newdelthis/docker_jenkins_demo.git'
         DOCKER_REPO = 'newdelthis/docker_jenkins_demo'
-        DOCKER_USERNAME = credentials('newdelthis')
-        DOCKER_PASSWORD = credentials('kahihi123()')
-	IMAGE_TAG = 1.0
+        DOCKER_CREDENTIALS = credentials('docker-hub-credentials-id')
+        IMAGE_TAG = '1.0' // Make sure to use string for tag
     }
     
     stages {
@@ -29,22 +28,12 @@ pipeline {
         
         stage('Push to DockerHub') {
             steps {
-                // Log in to DockerHub
+                // Log in to DockerHub and push Docker image
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', DOCKER_USERNAME, DOCKER_PASSWORD) {
-                        // Push Docker image to DockerHub
+                    docker.withRegistry('https://registry.hub.docker.com', DOCKER_CREDENTIALS) {
                         docker.image(DOCKER_REPO).push(IMAGE_TAG)
                     }
                 }
-            }
-        }
-    }
-    
-    post {
-        always {
-            // Clean up by logging out of DockerHub
-            script {
-                docker.logout()
             }
         }
     }
