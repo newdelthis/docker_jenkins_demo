@@ -30,7 +30,8 @@ pipeline {
             steps {
                 // Log in to DockerHub and push Docker image
                 script {
-                    docker.withRegistry('https://registry.hub.docker.com', DOCKER_CREDENTIALS) {
+                    // docker.withRegistry('https://registry.hub.docker.com', DOCKER_CREDENTIALS) {
+		    docker.withRegistry('', DOCKER_CREDENTIALS) {
                         docker.image(DOCKER_REPO).push(IMAGE_TAG)
                     }
                 }
