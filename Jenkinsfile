@@ -5,7 +5,6 @@ pipeline {
         // Define environment variables for Git and DockerHub credentials
         GIT_REPOSITORY_URL = 'https://github.com/newdelthis/docker_jenkins_demo.git'
         DOCKER_IMAGE_NAME = 'haajkahate/docker_jenkins_demo'
-        DOCKER_CREDENTIALS = credentials('my-docker-hub-credentials-id')
         IMAGE_TAG = '1.0' // Make sure to use string for tag
     }
     
@@ -43,8 +42,10 @@ pipeline {
                 // Log in to DockerHub and push Docker image
                 script {
                     try {
-                        docker.withRegistry('', DOCKER_CREDENTIALS) {
-                            docker.image(DOCKER_IMAGE_NAME).push(IMAGE_TAG)
+                        withCredentials([usernamePassword(credentialsId: 'my-docker-hub-credentials-id', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                            docker.withRegistry('', DOCKER_USERNAME, DOCKER_PASSWORD) {
+                                docker.image(DOCKER_IMAGE_NAME).push(IMAGE_TAG)
+                            }
                         }
                     } catch (Exception e) {
                         echo "Failed to push Docker image to registry: ${e.message}"
