@@ -43,7 +43,7 @@ pipeline {
                 script {
                     try {
                         withCredentials([usernamePassword(credentialsId: 'my-docker-hub-credentials-id', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                            docker.withRegistry('https://registry.hub.docker.com', DOCKER_USERNAME, DOCKER_PASSWORD) {
+                            docker.withRegistry('https://registry.hub.docker.com') {
                                 docker.image(DOCKER_IMAGE_NAME).push(IMAGE_TAG)
                             }
                         }
