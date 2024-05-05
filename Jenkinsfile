@@ -3,8 +3,8 @@ pipeline {
     
     environment {
         // Define environment variables for Git and DockerHub credentials
-        GIT_REPO = 'https://github.com/newdelthis/docker_jenkins_demo.git'
-        DOCKER_REPO = 'haajkahate/docker_jenkins_demo'
+        GIT_REPOSITORY_URL = 'https://github.com/newdelthis/docker_jenkins_demo.git'
+        DOCKER_IMAGE_NAME = 'haajkahate/docker_jenkins_demo'
         DOCKER_CREDENTIALS = credentials('my-docker-hub-credentials-id')
         IMAGE_TAG = '1.0' // Make sure to use string for tag
     }
@@ -13,7 +13,14 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Checkout the Git repository
-                git branch: 'main', url: GIT_REPO
+                script {
+                    try {
+                        git branch: 'main', url: GIT_REPOSITORY_URL
+                    } catch (Exception e) {
+                        echo "Failed to clone repository: ${e.message}"
+                        error "Failed to clone repository"
+                    }
+                }
             }
         }
         
@@ -21,7 +28,12 @@ pipeline {
             steps {
                 // Build Docker image using Dockerfile in repository
                 script {
-                    docker.build(DOCKER_REPO)
+                    try {
+                        docker.build(DOCKER_IMAGE_NAME)
+                    } catch (Exception e) {
+                        echo "Failed to build Docker image: ${e.message}"
+                        error "Failed to build Docker image"
+                    }
                 }
             }
         }
@@ -30,9 +42,13 @@ pipeline {
             steps {
                 // Log in to DockerHub and push Docker image
                 script {
-                    // docker.withRegistry('https://registry.hub.docker.com', DOCKER_CREDENTIALS) {
-		    docker.withRegistry('', DOCKER_CREDENTIALS) {
-                        docker.image(DOCKER_REPO).push(IMAGE_TAG)
+                    try {
+                        docker.withRegistry('', DOCKER_CREDENTIALS) {
+                            docker.image(DOCKER_IMAGE_NAME).push(IMAGE_TAG)
+                        }
+                    } catch (Exception e) {
+                        echo "Failed to push Docker image to registry: ${e.message}"
+                        error "Failed to push Docker image"
                     }
                 }
             }
