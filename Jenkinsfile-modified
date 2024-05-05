@@ -57,11 +57,12 @@ pipeline {
         
         stage('Run Docker Container') {
             steps {
-                // Pull Docker image from DockerHub and run it as a container on port 5000:5000
+                // Run Docker container with port mapping
                 script {
                     try {
-                        docker.image("${DOCKER_IMAGE_NAME}:${IMAGE_TAG}").pull()
-                        docker.run("-p 5000:5000 ${DOCKER_IMAGE_NAME}:${IMAGE_TAG}")
+                        def container = docker.image("${DOCKER_IMAGE_NAME}:${IMAGE_TAG}").run("-p 5000:5000")
+                        // Print container ID
+                        echo "Container ID: ${container.id}"
                     } catch (Exception e) {
                         echo "Failed to run Docker container: ${e.message}"
                         error "Failed to run Docker container"
